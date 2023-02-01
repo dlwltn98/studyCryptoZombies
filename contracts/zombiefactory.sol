@@ -18,12 +18,21 @@ contract ZombieFactory {
     // Zombie 구조체의 public 배열 생성
     Zombie[] public zombies;
 
+    // 매핑 생성
+    // 좀비 id로 좀비를 저장하고 검색
+    mapping (uint => address) public zombieToOwner;
+    mapping (address => uint) ownerZombieCount;
+
     // 좀비 생성 private 함수 선언
-    function _createZombie(string _name, uint _dna) private {
+    // 함수 접근 제어자를 private에서 internal로 변경
+    function _createZombie(string _name, uint _dna) internal {
 
         // 새로운 좀비를 zombies 배열에 추가
         // 배열의 첫 원소가 0이라는 인덱스를 갖기 때문에, array.push() - 1은 막 추가된 좀비의 인덱스가 됨
         uint id = zombies.push(Zombie(_name, _dna)) - 1;
+
+        zombieToOwner[id] = msg.sender;
+        ownerZombieCount[msg.sender]++;
 
         // 새로운 좀비가 배열에 추가되면 이벤트 실행
         NewZombie(id, _name, _dna);
@@ -40,6 +49,8 @@ contract ZombieFactory {
 
     // public 함수 선언
     function createRandomZombie(string _name) public {
+
+        require(ownerZombieCount[msg.sender] == 0);
         // 좀비 dna 생성
         uint randDna = _generateRandomDna(_name);
         // 새로운 좀비 배열에 추가 
