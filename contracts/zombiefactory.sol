@@ -1,6 +1,9 @@
 pragma solidity ^0.4.19;
 
-contract ZombieFactory {
+import "./ownable.sol";
+
+// Ownable 상속
+contract ZombieFactory is Ownable {
 
     // event 선언
     event NewZombie(uint zombieId , string name, uint dna);
@@ -9,10 +12,15 @@ contract ZombieFactory {
     uint dnaDigits = 16;
     uint dnaModulus = 10 ** dnaDigits;
 
+    // 재사용 대기시간 : 1일이 지나야 다시 사용 가능
+    uint cooldownTime = 1 days;
+
     // Zombie 라는 구조체 생성
     struct Zombie {
         string name;
         uint dna;
+        uint32 level;
+        uint32 readyTime;  // 재사용 대기시간
     }
 
     // Zombie 구조체의 public 배열 생성
@@ -29,7 +37,7 @@ contract ZombieFactory {
 
         // 새로운 좀비를 zombies 배열에 추가
         // 배열의 첫 원소가 0이라는 인덱스를 갖기 때문에, array.push() - 1은 막 추가된 좀비의 인덱스가 됨
-        uint id = zombies.push(Zombie(_name, _dna)) - 1;
+        uint id = zombies.push(Zombie(_name, _dna, 1, uint32(now + cooldownTime))) - 1;
 
         zombieToOwner[id] = msg.sender;
         ownerZombieCount[msg.sender]++;
