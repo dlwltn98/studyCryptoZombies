@@ -21,23 +21,24 @@ contract ZombieFactory is Ownable {
         uint dna;
         uint32 level;
         uint32 readyTime;  // 재사용 대기시간
+        uint16 winCount;   // 전투 승리 횟수
+        uint16 lossCount;  // 전투 패배 횟수
     }
 
     // Zombie 구조체의 public 배열 생성
     Zombie[] public zombies;
 
-    // 매핑 생성
     // 좀비 id로 좀비를 저장하고 검색
     mapping (uint => address) public zombieToOwner;
     mapping (address => uint) ownerZombieCount;
 
-    // 좀비 생성 private 함수 선언
+
     // 함수 접근 제어자를 private에서 internal로 변경
     function _createZombie(string _name, uint _dna) internal {
 
         // 새로운 좀비를 zombies 배열에 추가
         // 배열의 첫 원소가 0이라는 인덱스를 갖기 때문에, array.push() - 1은 막 추가된 좀비의 인덱스가 됨
-        uint id = zombies.push(Zombie(_name, _dna, 1, uint32(now + cooldownTime))) - 1;
+        uint id = zombies.push(Zombie(_name, _dna, 1, uint32(now + cooldownTime), 0, 0)) - 1;
 
         zombieToOwner[id] = msg.sender;
         ownerZombieCount[msg.sender]++;

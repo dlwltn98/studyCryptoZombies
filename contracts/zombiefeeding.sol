@@ -24,6 +24,12 @@ contract ZombieFeeding is ZombieFactory {
 
     // 크립토키티 컨트랙트 주소의 업데이트가 가능하도록 수정
     KittyInterface kittyContract;
+
+    // 좀비 소유자 확인하는 사용자 정의 제어자
+    modifier onlyOwnerOf(uint _zombieId) {
+        require(msg.sender == zombieToOwner[_zombieId]);
+    }
+    
     // 소유자만 수정할 수 있도록 수정
     function setKittyContractAddress(address _address) external onlyOwner {
         kittyContract = KittyInterface(_address);
@@ -40,10 +46,7 @@ contract ZombieFeeding is ZombieFactory {
     }
 
     // 좀비 dna가 생명체의 dna와 혼합되어 새로운 좀비 생성
-    function feedAndMultiply(uint _zombieId, uint _targetDna) internal {
-        
-        // 주인만 좀비에게 먹이를 줄 수 있음
-        require(msg.sender == zombieToOwner[_zombieId]);
+    function feedAndMultiply(uint _zombieId, uint _targetDna, string _species) internal onlyOwnerOf(_zombieId) {
 
         // 먹이를 먹는 좀비의 dna 얻음
         Zombie storage myZombie = zombies[_zombieId];
@@ -69,7 +72,7 @@ contract ZombieFeeding is ZombieFactory {
 
     // 크립토키티 컨트랙트와 상호작용
     // 크립토키티 컨트랙트에서 고양이 유전자를 얻어내는 함수를 생성
-    function feedOnKitty (uint _zombieId, uint _kittyId, string _species) public {
+    function feedOnKitty (uint _zombieId, uint _kittyId) public {
 
         uint kittyDna;
         (,,,,,,,,,kittyDna) = kittyContract.getKitty(_kittyId);
