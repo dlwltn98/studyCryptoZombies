@@ -26,7 +26,7 @@ contract ZombieHelper is ZombieFeeding  {
     // 이더를 받으면 좀비의 레벨을 올려주는 함수
     function levelUp(uint _zombieId) external payable {
         require(msg.value == levelUpFee); // 함수 실행에 이더가 보내졌는지 확인
-        zombies[_zombieId].level++; // 확인되면 좀비 레벨 증가
+        zombies[_zombieId].level = zombies[_zombieId].level.add(1); // 확인되면 좀비 레벨 증가
     }
 
     // 좀비의 레벨이 2 이상이면 이름 수정 가능

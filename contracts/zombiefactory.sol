@@ -1,11 +1,16 @@
 pragma solidity ^0.4.19;
 
 import "./ownable.sol";
+import "./safemath.sol";
 
 // Ownable 상속
 contract ZombieFactory is Ownable {
 
-    // event 선언
+    // SafeMath 
+    using SafeMath for uint256;
+    using SafeMath for uint32;
+    using SafeMath for uint16;
+
     event NewZombie(uint zombieId , string name, uint dna);
 
     // dnaModulus라는 uint형 변수를 생성하고 10의 dnaDigits승을 배정
@@ -15,7 +20,6 @@ contract ZombieFactory is Ownable {
     // 재사용 대기시간 : 1일이 지나야 다시 사용 가능
     uint cooldownTime = 1 days;
 
-    // Zombie 라는 구조체 생성
     struct Zombie {
         string name;
         uint dna;
@@ -41,7 +45,7 @@ contract ZombieFactory is Ownable {
         uint id = zombies.push(Zombie(_name, _dna, 1, uint32(now + cooldownTime), 0, 0)) - 1;
 
         zombieToOwner[id] = msg.sender;
-        ownerZombieCount[msg.sender]++;
+        ownerZombieCount[msg.sender] = ownerZombieCount[msg.sender].add(1);
 
         // 새로운 좀비가 배열에 추가되면 이벤트 실행
         NewZombie(id, _name, _dna);

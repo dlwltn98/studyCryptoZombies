@@ -21,16 +21,16 @@ contract ZombieBattle is ZombieHelper {
 
         // 내 좀비 승리
         if(rand <= attackVictoryProbability) {
-            myZombie.winCount++;  
-            myZombie.level++;
-            enemyZombie.lossCount++;
+            myZombie.winCount = myZombie.winCount.add(1);  
+            myZombie.level = myZombie.level.add(1);
+            enemyZombie.lossCount = enemyZombie.lossCount.add(1);
 
             // 새로운 좀비 생성
             feedAndMultiply(_zombieId, enemyZombie.dna, "zombie");
         } else {
             // 내 좀비 패배
-            myZombie.lossCount++;
-            enemyZombie.winCount++;
+            myZombie.lossCount = myZombie.lossCount.add(1);
+            enemyZombie.winCount = enemyZombie.winCount.add(1);
         }
 
         // 좀비 쿨타임

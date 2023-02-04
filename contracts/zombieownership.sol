@@ -3,6 +3,10 @@ pragma solidity ^0.4.19;
 import "./zombieattack.sol";
 import "./erc721.sol";
 
+/// TODO: natspec에 맞도록 이 부분을 바꾸기
+/// @title 좀비 소유권 전송을 관리하는 컨트랙트
+/// @author leejisu
+/// @dev OpenZeppelin의 ERC721 표준 초안 구현을 따른다
 contract ZombieOwnership is ZombieAttack, ERC721 {
 
     mapping (uint => address) zombieApprovals;
@@ -19,8 +23,8 @@ contract ZombieOwnership is ZombieAttack, ERC721 {
 
     // 전송 함수
     function _transfer(address _from, address _to, uint256 _tokenId) private {
-        ownerZombieCount[_to]++;    // 받는 사람의 좀비 수 증가
-        ownerZombieCount[_from]--;  // 보내는 사람의 좀비 수 감소
+        ownerZombieCount[_to] = ownerZombieCount[_to].add(1);    // 받는 사람의 좀비 수 증가
+        ownerZombieCount[_from] = ownerZombieCount[_from].sub(1);  // 보내는 사람의 좀비 수 감소
         zombieToOwner[_tokenId] = _to;
          
         Transfer(_from, _to, _tokenId); // 전송
